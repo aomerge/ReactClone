@@ -1,32 +1,49 @@
-let globalState = {}; // Estado global para mantener los valores del estado
-let currentIndex = 0; // Índice para llevar un seguimiento de la llamada actual a useState
+export default class StateManager {
+  private globalState: { [key: number]: any };
+  private currentIndex: number;
 
-export default function createUseState() {
-  let callIndex = currentIndex; // Capturar el índice actual
-  currentIndex++;
+  constructor() {
+    this.globalState = [];
+    this.currentIndex = 0;
+  }
 
-  return function useState(initialValue: any) {
-    // Inicializar el estado si es la primera llamada
-    if (!globalState.hasOwnProperty(callIndex)) {
-      globalState[callIndex] = initialValue;
+  public createUseState() {
+    const callIndex = this.currentIndex;
+    this.currentIndex++;
+    console.log("callIndex", callIndex);
+    console.log("this.globalState.hasOwnProperty(callIndex)", this.globalState.hasOwnProperty(callIndex));      
+    
+    return (initialValue: any) => this.getState(callIndex, initialValue);
+  }
+
+  private getState(callIndex: number, initialValue: any) {
+    console.log("callIndex", callIndex);
+    console.log("this.globalState", this.globalState);
+    
+    if (!this.globalState.hasOwnProperty(callIndex)) {
+      this.globalState[callIndex] = initialValue;
     }
+    console.log("callIndex", callIndex);
+    console.log("this.globalState", this.globalState);
 
-    function setState(newValue: () => {}) {
-      globalState[callIndex] = newValue;
+    // Devuelve el estado actual y una función para actualizarlo
+    console.log("AAAAAAAAAA", [
+      this.globalState[callIndex],
+      (newValue: any) => this.setState(callIndex, newValue)]);
 
-      // Aquí, deberías desencadenar el re-renderizado del componente.
-      // En React, esto se maneja internamente.
-    }
+    return [this.globalState[callIndex], (newValue: any) => this.setState(callIndex, newValue)];
+  }
 
-    return [globalState[callIndex], setState];
-  };
+  private setState(callIndex: number, newValue: any) {    
+    console.log(newValue);
+    this.globalState[callIndex] = newValue;
+    // Aquí deberías desencadenar el re-renderizado del componente
+  }
 }
 
-// Uso
-const useState = createUseState();
-
-function MyComponent() {
-  const [count, setCount] = useState(0);
-
-  // Usa count y setCount como lo harías en React...
-}
+/*
+// Uso de la clase StateManager y su método createUseState
+const stateManager = new StateManager();
+const useState = stateManager.createUseState();
+console.log("useState", useState);
+const [myState, setMyState] = useState("initial value"); */

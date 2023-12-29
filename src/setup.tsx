@@ -6,8 +6,10 @@ import {
 } from "./types&Interface/TIndex";
 import createUseState from "./hooks/useState";
 //import createUseEffect from "./hooks/useEffect";
+const stateManager = new createUseState();
+export const useState = stateManager.createUseState();
+console.log("useState", useState);
 
-export const useState = createUseState();
 //export const useEffect = createUseEffect();
 
 class ReactClone {

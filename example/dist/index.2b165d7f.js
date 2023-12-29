@@ -592,10 +592,23 @@ function ReactClon(type, props, ...args) {
         children
     };
 }
+function Test() {
+    // Inicialización del estado con useState
+    const [text, setText] = (0, _setup.useState)("holag");
+    // Función para actualizar el estado
+    const changeText = ()=>{
+        setText("adios");
+        console.log("text", text);
+    };
+    // JSX que se renderiza en el DOM
+    return ReactClon("div", null, ReactClon("p", null, text), " ", ReactClon("button", {
+        onClick: changeText
+    }, "Cambiar Texto"), " ");
+}
 const Subtitle = ({ text })=>{
     return ReactClon("div", null, ReactClon("h1", {
         className: "text"
-    }, "hola bebe"), ReactClon(Alt, null), ReactClon("h2", null, text), ReactClon(Buttom, {
+    }, "hola bebe"), ReactClon(Alt, null), ReactClon("h2", null, text), ReactClon(Test, null), ReactClon(Buttom, {
         setIndex: ""
     }));
 };
@@ -642,7 +655,10 @@ parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "useState", ()=>useState);
 var _useState = require("./hooks/useState");
 var _useStateDefault = parcelHelpers.interopDefault(_useState);
-const useState = (0, _useStateDefault.default)();
+//import createUseEffect from "./hooks/useEffect";
+const stateManager = new (0, _useStateDefault.default)();
+const useState = stateManager.createUseState();
+console.log("useState", useState);
 //export const useEffect = createUseEffect();
 class ReactClone {
     static render(element, container) {
@@ -674,32 +690,46 @@ exports.default = ReactClone;
 },{"./hooks/useState":"bfWAb","@parcel/transformer-js/src/esmodule-helpers.js":"fF8Uh"}],"bfWAb":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "default", ()=>createUseState);
-let globalState = {}; // Estado global para mantener los valores del estado
-let currentIndex = 0; // Índice para llevar un seguimiento de la llamada actual a useState
-function createUseState() {
-    let callIndex = currentIndex; // Capturar el índice actual
-    currentIndex++;
-    return function useState(initialValue) {
-        // Inicializar el estado si es la primera llamada
-        if (!globalState.hasOwnProperty(callIndex)) globalState[callIndex] = initialValue;
-        function setState(newValue) {
-            globalState[callIndex] = newValue;
-        // Aquí, deberías desencadenar el re-renderizado del componente.
-        // En React, esto se maneja internamente.
-        }
+class StateManager {
+    constructor(){
+        this.globalState = [];
+        this.currentIndex = 0;
+    }
+    createUseState() {
+        const callIndex = this.currentIndex;
+        this.currentIndex++;
+        console.log("callIndex", callIndex);
+        console.log("this.globalState.hasOwnProperty(callIndex)", this.globalState.hasOwnProperty(callIndex));
+        return (initialValue)=>this.getState(callIndex, initialValue);
+    }
+    getState(callIndex, initialValue) {
+        console.log("callIndex", callIndex);
+        console.log("this.globalState", this.globalState);
+        if (!this.globalState.hasOwnProperty(callIndex)) this.globalState[callIndex] = initialValue;
+        console.log("callIndex", callIndex);
+        console.log("this.globalState", this.globalState);
+        // Devuelve el estado actual y una función para actualizarlo
+        console.log("AAAAAAAAAA", [
+            this.globalState[callIndex],
+            (newValue)=>this.setState(callIndex, newValue)
+        ]);
         return [
-            globalState[callIndex],
-            setState
+            this.globalState[callIndex],
+            (newValue)=>this.setState(callIndex, newValue)
         ];
-    };
-}
-// Uso
-const useState = createUseState();
-function MyComponent() {
-    const [count, setCount] = useState(0);
-// Usa count y setCount como lo harías en React...
-}
+    }
+    setState(callIndex, newValue) {
+        console.log(newValue);
+        this.globalState[callIndex] = newValue;
+    // Aquí deberías desencadenar el re-renderizado del componente
+    }
+} /*
+// Uso de la clase StateManager y su método createUseState
+const stateManager = new StateManager();
+const useState = stateManager.createUseState();
+console.log("useState", useState);
+const [myState, setMyState] = useState("initial value"); */ 
+exports.default = StateManager;
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"fF8Uh"}]},["1YAAK","41UdK"], "41UdK", "parcelRequire19e8")
 
