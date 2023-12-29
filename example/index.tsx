@@ -1,8 +1,8 @@
 /**@jsx ReactClon */
-import ReactClone, { useState } from "../src/ReactClon";
+import ReactClone from "../src/setup";
 import "./styles.css";
 function Buttom({ setIndex }: { setIndex: any }) {
-  return <button onClick={() => setIndex(2)}>Haz clic aquí</button>;
+  return <button onClick={() => alert("hola mundo")}>Haz clic aquí</button>;
 }
 function ReactClon(type: any, props: any, ...args: any[]) {
   const children = [].concat(...args);
@@ -13,14 +13,14 @@ function ReactClon(type: any, props: any, ...args: any[]) {
   };
 }
 const Subtitle = ({ text }: { text: string | null }) => {
-  const [index, setIndex] = useState(0);
-  console.log(index);
+  
+  
   return (
     <div>
       <h1 className="text">hola bebe</h1>
       <Alt />
       <h2>{text}</h2>
-      <Buttom setIndex={setIndex} />
+      <Buttom setIndex={""} />
     </div>
   );
 };

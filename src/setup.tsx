@@ -5,10 +5,10 @@ import {
   FunctionComponent,
 } from "./types&Interface/TIndex";
 import createUseState from "./hooks/useState";
-import createUseEffect from "./hooks/useEffect";
+//import createUseEffect from "./hooks/useEffect";
 
 export const useState = createUseState();
-export const useEffect = createUseEffect();
+//export const useEffect = createUseEffect();
 
 class ReactClone {
   static render(element: ReactClonElement, container: HTMLElement | any) {

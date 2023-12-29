@@ -112,7 +112,6 @@ describe('UseEffect', () => {
 
     expect(effectFn).toHaveBeenCalledTimes(2);
   });
-});
 function beforeEach(arg0: () => void) {
   throw new Error('Function not implemented.');
 }
