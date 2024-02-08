@@ -1,49 +1,82 @@
-export default class StateManager {
-  private globalState: { [key: number]: any };
-  private currentIndex: number;
+import { ReactClone } from "../reactClone/reactClone";
 
-  constructor() {
-    this.globalState = [];
-    this.currentIndex = 0;
+type StateTuple = [any, (newValue: any) => any];
+
+
+export class StateManager extends ReactClone {
+  static globalState: any = new Map<number, any>();  
+  private static listeners: Function[] = [];
+
+  public static createUseState(): (
+    initialValue: any
+  ) => [any, (newValue: any) => void] {
+    return (initialValue: any) => this.getState(initialValue);
   }
-
-  public createUseState() {
-    const callIndex = this.currentIndex;
-    this.currentIndex++;
-    console.log("callIndex", callIndex);
-    console.log("this.globalState.hasOwnProperty(callIndex)", this.globalState.hasOwnProperty(callIndex));      
-    
-    return (initialValue: any) => this.getState(callIndex, initialValue);
-  }
-
-  private getState(callIndex: number, initialValue: any) {
-    console.log("callIndex", callIndex);
-    console.log("this.globalState", this.globalState);
-    
-    if (!this.globalState.hasOwnProperty(callIndex)) {
-      this.globalState[callIndex] = initialValue;
+  
+  private static getState(
+    initialValue: any
+    ): [any, (newValue: any) => void] {
+      const index = this.currentComponentId;
+      console.log("index x", index);
+      
+      if (!this.globalState.has(index)) {
+        this.globalState.set(index, initialValue);
     }
-    console.log("callIndex", callIndex);
-    console.log("this.globalState", this.globalState);
 
-    // Devuelve el estado actual y una función para actualizarlo
-    console.log("AAAAAAAAAA", [
-      this.globalState[callIndex],
-      (newValue: any) => this.setState(callIndex, newValue)]);
+    
+    const setState = (newValue: any) => {
+      console.log("newvalue", newValue);
+      if (this.globalState.get(index) !== newValue) {
+        this.setStateUpdated();
+        this.globalState.set(index, newValue);
+        this.scheduleRender(index);
+        this.listeners.forEach((listener) => listener());
+      }
+      if (!this.globalState.has(index)) {
+        console.warn("No se puede actualizar el estado");
+      }
+    };
+    const TgetState = this.globalState.get(index);
 
-    return [this.globalState[callIndex], (newValue: any) => this.setState(callIndex, newValue)];
+    return [TgetState, setState];
   }
 
-  private setState(callIndex: number, newValue: any) {    
-    console.log(newValue);
-    this.globalState[callIndex] = newValue;
-    // Aquí deberías desencadenar el re-renderizado del componente
+  public static subscribe(listener: Function) {
+    this.listeners.push(listener);
+  }
+
+  private static componentStates = new Map();
+
+  public static useState(componentId: string, initialValue: any): [any, (newValue: any) => void] {
+
+    if (!this.componentStates.has(componentId)) {
+      this.componentStates.set(componentId, new Map());
+    }
+    const stateMap = this.componentStates.get(componentId);
+    const index = stateMap.size;
+    stateMap.set(index, initialValue);
+
+    const setState = (newValue: any) => {
+      stateMap.set(index, newValue);
+      ReactClone.scheduleRender(componentId);
+    };
+    return [stateMap.get(index), setState];
+  }
+
+  // Método para eliminar suscriptores si es necesario
+  public static unsubscribe(listener: Function) {
+    this.listeners = this.listeners.filter((l) => l !== listener);
   }
 }
 
-/*
-// Uso de la clase StateManager y su método createUseState
-const stateManager = new StateManager();
-const useState = stateManager.createUseState();
-console.log("useState", useState);
-const [myState, setMyState] = useState("initial value"); */
+
+/* console.log("stateValue tzlh", stateValue2);
+setState2(100);
+console.log("stateValue tzl", stateValue2); */
+
+// Suscribirse a cambios
+StateManager.subscribe(() =>
+  console.log("Estado cambiado:", StateManager.globalState)
+);
+
+console.log("globalstate", StateManager.globalState);

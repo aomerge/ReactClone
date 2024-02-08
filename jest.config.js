@@ -1,3 +1,7 @@
+// jest.config.js
 module.exports = {
-  testMatch: ["**/?(*.)+(spec|test).[jt]s?(x)"],
+  transform: {
+    "^.+\\.[t|j]sx?$": "babel-jest",
+  },
+  // ... other configurations
 };

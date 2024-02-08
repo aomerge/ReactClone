@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",                    // Compila a ES5 para una amplia compatibilidad con navegadores
+    "target": "es2017",                    // Compila a ES5 para una amplia compatibilidad con navegadores
     "module": "commonjs",               // Usa CommonJS para módulos
     "lib": ["dom", "es6", "es2017", "esnext"], // Incluye librerías para el DOM y características de ECMAScript
     "jsx": "preserve",                  // Preserva el JSX para que Babel pueda transpilarlo

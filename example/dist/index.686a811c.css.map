@@ -1,1 +1,0 @@
-{"mappings":"AAAA;;;;AAGA","sources":["example/styles.css"],"sourcesContent":["body {\n  font-family: sans-serif;\n}\n.text {\n  color: brown;\n  font-size: 34px;\n}\n"],"names":[],"version":3,"file":"index.686a811c.css.map","sourceRoot":"/__parcel_source_root/"}

@@ -1,48 +1,31 @@
-import {
-  ElementType,
-  Props,
-  ReactClonElement,
-  FunctionComponent,
-} from "./types&Interface/TIndex";
-import createUseState from "./hooks/useState";
-//import createUseEffect from "./hooks/useEffect";
-const stateManager = new createUseState();
-export const useState = stateManager.createUseState();
-console.log("useState", useState);
+import { StateManager } from "./hooks/useState";
+import { ReactClone } from "./reactClone/reactClone";
+type StateTuple = [any, (newValue: any) => any];
 
-//export const useEffect = createUseEffect();
+export const abs = StateManager.createUseState();
+export const abs2 = StateManager.createUseState();
 
-class ReactClone {
-  static render(element: ReactClonElement, container: HTMLElement | any) {
-    container?.appendChild(this.run(element));
-  }
+/* export function createMultipleUseStates(initialValues: any | any[]): any {
+  const isSingleValue = !Array.isArray(initialValues);
+  const values = isSingleValue ? [initialValues] : initialValues;
 
-  private static run(node: any): ReactClonElement {
-    if (typeof node.type === "function") {
-      const result = node.type(node.props);
-      return this.run(result);
-    }
-    const element = document.createElement(node.type);
-    if (node.props) {
-      Object.keys(node.props).map((key) => {
-        if (key.startsWith("on")) {
-          const eventType = key.substring(2).toLowerCase();
-          element.addEventListener(eventType, node.props[key]);
-        }
-        element.setAttribute(key, node.props[key]);
-      });
-    }
-    if (node.props && node.props.className) {
-      element.setAttribute("class", node.props.className);
-    }
-    node.children.forEach((child: any) => {
-      if (typeof child === "string") {
-        return element.appendChild(document.createTextNode(node.children));
-      }
-      return element.appendChild(this.run(child));
-    });
-    return element;
-  }
+  const states = values.map((initialValue) => {
+    // Asegurarse de que cada useStateInstance cree un estado independiente
+    const useStateInstance = StateManager.createUseState();
+    return useStateInstance(initialValue);
+  });
+
+  // Devolver un único estado o un arreglo de estados, según corresponda
+  return isSingleValue ? states[0] : states;
 }
+
+export function useCustomState(initialValue: any) {
+  const useStateInstance = StateManager.createUseState();
+  return useStateInstance(initialValue);
+} */
+
+
+export const globalState = StateManager.globalState;
+
 
 export default ReactClone;

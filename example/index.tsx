@@ -1,53 +1,46 @@
 /**@jsx ReactClon */
-import ReactClone, {useState} from "../src/setup";
+import ReactClone, {  
+  globalState,  
+  abs,
+  abs2
+} from "../src/setup";
 import "./styles.css";
-function Buttom({ setIndex }: { setIndex: any }) {
-  return <button onClick={() => alert("hola mundo")}>Haz clic aquí</button>;
-}
 function ReactClon(type: any, props: any, ...args: any[]) {
   const children = [].concat(...args);
   return {
+    id: Math.floor(Math.random() * 10000),
     type,
     props,
     children,
   };
 }
-function Test() {
-  // Inicialización del estado con useState
-  const [text, setText] =  useState("holag");   
 
-  // Función para actualizar el estado
-  const changeText = () => {
-    setText("adios");
-    console.log("text",text);
-  };
+function Test() {
+
+  const [stat, setState] = abs("valor inicial");
+
 
   // JSX que se renderiza en el DOM
   return (
-    <div>
-      <p>{text}</p> {/* Muestra el estado actual */}
-      <button onClick={changeText}>Cambiar Texto</button>{" "}      
+    <div>      
+      <p>{stat}</p>      
+      <button
+        onClick={() => {
+          console.log("sd", stat);
+          setState("goku");                 
+        }}
+      >
+        Cambiar estado
+      </button>      
     </div>
   );
 }
-const Subtitle = ({ text }: { text: string | null }) => {  
-  
+const Subtitle = ({ text }: { text: string | null }) => {
   return (
     <div>
-      <h1 className="text">hola bebe</h1>
-      <Alt />
-      <h2>{text}</h2>
-      <Test />
-      <Buttom setIndex={""} />
+      <h1 className="text">hola mundo soy un clon de react</h1>      
+      <Test />      
     </div>
-  );
-};
-const Alt = () => {
-  return (
-    <ul>
-      <li>hola</li>
-      <li>hola</li>
-    </ul>
   );
 };
 

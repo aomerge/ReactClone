@@ -1,5 +1,9 @@
 {
-  "presets": [],
+  "presets": [
+    "@babel/preset-env",        
+    // Add this if you're using TypeScript
+    "@babel/preset-typescript"
+  ],
   "plugins": [
     [
       "@babel/plugin-transform-react-jsx",
@@ -7,5 +11,6 @@
         "pragma": "ReactClon.createElement"
       }
     ]
+    ,"@babel/plugin-proposal-class-properties"
   ]
 }
