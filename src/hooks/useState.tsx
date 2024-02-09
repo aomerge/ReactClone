@@ -2,81 +2,73 @@ import { ReactClone } from "../reactClone/reactClone";
 
 type StateTuple = [any, (newValue: any) => any];
 
-
 export class StateManager extends ReactClone {
-  static globalState: any = new Map<number, any>();  
+  /**
+   * An array of listeners for the useState hook.
+   */
   private static listeners: Function[] = [];
 
+  /**
+   * Creates a custom useState hook.
+   * @returns A function that takes an initialValue and returns an array with the current state value and a function to update the state.
+   */
   public static createUseState(): (
     initialValue: any
   ) => [any, (newValue: any) => void] {
-    return (initialValue: any) => this.getState(initialValue);
+    return (initialValue: any) => {
+      const [state, setState] = this.getState(initialValue);
+      const index = this.currentComponentId;
+      return [state, (newValue: any) => setState(index, newValue)];
+    };
   }
-  
+
+  /**
+   * Retrieves the state value and a function to update it.
+   * If the state value does not exist, it initializes it with the provided initial value.
+   *
+   * @param initialValue - The initial value of the state.
+   * @returns A tuple containing the state value and a function to update it.
+   */
   private static getState(
     initialValue: any
-    ): [any, (newValue: any) => void] {
-      const index = this.currentComponentId;
-      console.log("index x", index);
-      
-      if (!this.globalState.has(index)) {
-        this.globalState.set(index, initialValue);
+  ): [any, (index: any, newValue: any) => void] {
+    const uniqueId = `${this.currentComponentId}:${this.currentHookIndex}`;
+    this.currentHookIndex++; // Incrementa después de usar para asegurar que el próximo hook tenga un índice único.
+
+    if (!this.globalState.has(uniqueId)) {
+      this.globalState.set(uniqueId, initialValue);
     }
 
-    
-    const setState = (newValue: any) => {
-      console.log("newvalue", newValue);
-      if (this.globalState.get(index) !== newValue) {
-        this.setStateUpdated();
-        this.globalState.set(index, newValue);
-        this.scheduleRender(index);
-        this.listeners.forEach((listener) => listener());
-      }
-      if (!this.globalState.has(index)) {
-        console.warn("No se puede actualizar el estado");
+    const setState = (index: number, newValue: any) => {      
+      // Si el valor del estado ha cambiado, actualiza globalState y añade el componente al conjunto de actualizaciones.            
+      let currentState = this.globalState.get(uniqueId);
+      if (currentState !== newValue) {        
+        this.globalState.set(uniqueId, newValue);        
+        this.componentsToUpdate.add(index); // Suponiendo que index es el id del componente.        
+        this.scheduleRender();
+        this.resetCurrentHookIndex(); // Podría ser necesario ajustar cómo se invoca la renderización.
       }
     };
-    const TgetState = this.globalState.get(index);
 
-    return [TgetState, setState];
+    return [this.globalState.get(uniqueId), setState];
   }
-
+  // Asegúrate de resetear 'currentHookIndex' al inicio del renderizado de cada componente.
+  static resetCurrentHookIndex() {
+    this.currentHookIndex = 0;
+  }
+  /**
+   * Subscribes a listener function to the state.
+   * @param {Function} listener - The listener function to be subscribed.
+   */
   public static subscribe(listener: Function) {
     this.listeners.push(listener);
   }
 
-  private static componentStates = new Map();
-
-  public static useState(componentId: string, initialValue: any): [any, (newValue: any) => void] {
-
-    if (!this.componentStates.has(componentId)) {
-      this.componentStates.set(componentId, new Map());
-    }
-    const stateMap = this.componentStates.get(componentId);
-    const index = stateMap.size;
-    stateMap.set(index, initialValue);
-
-    const setState = (newValue: any) => {
-      stateMap.set(index, newValue);
-      ReactClone.scheduleRender(componentId);
-    };
-    return [stateMap.get(index), setState];
-  }
-
-  // Método para eliminar suscriptores si es necesario
+  /**
+   * Unsubscribes a listener from the state.
+   * @param {Function} listener - The listener function to unsubscribe.
+   */
   public static unsubscribe(listener: Function) {
     this.listeners = this.listeners.filter((l) => l !== listener);
   }
 }
-
-
-/* console.log("stateValue tzlh", stateValue2);
-setState2(100);
-console.log("stateValue tzl", stateValue2); */
-
-// Suscribirse a cambios
-StateManager.subscribe(() =>
-  console.log("Estado cambiado:", StateManager.globalState)
-);
-
-console.log("globalstate", StateManager.globalState);

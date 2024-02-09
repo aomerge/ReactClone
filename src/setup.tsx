@@ -3,7 +3,6 @@ import { ReactClone } from "./reactClone/reactClone";
 type StateTuple = [any, (newValue: any) => any];
 
 export const abs = StateManager.createUseState();
-export const abs2 = StateManager.createUseState();
 
 /* export function createMultipleUseStates(initialValues: any | any[]): any {
   const isSingleValue = !Array.isArray(initialValues);

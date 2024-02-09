@@ -19,7 +19,6 @@ describe("StateManager", () => {
     StateManager.subscribe(listener);
 
     setState("new value");
-
     expect(state).toBe("new value");
     expect(listener).toHaveBeenCalledTimes(1);
   });

@@ -2,7 +2,7 @@
 import ReactClone, {  
   globalState,  
   abs,
-  abs2
+
 } from "../src/setup";
 import "./styles.css";
 function ReactClon(type: any, props: any, ...args: any[]) {
@@ -17,17 +17,20 @@ function ReactClon(type: any, props: any, ...args: any[]) {
 
 function Test() {
 
-  const [stat, setState] = abs("valor inicial");
+  const [stat, setState] = abs("valor");
+  const [stat2, setState2] = abs("valor2");
 
 
   // JSX que se renderiza en el DOM
   return (
     <div>      
       <p>{stat}</p>      
+      <p>{stat2}</p>      
       <button
         onClick={() => {
-          console.log("sd", stat);
-          setState("goku");                 
+          setState("goku");
+          setState2("vegeta");
+          console.log("state hook", stat);                           
         }}
       >
         Cambiar estado
