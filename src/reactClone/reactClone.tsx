@@ -40,7 +40,9 @@ export class ReactClone {
    * Set of components to update.
    */
   static componentsToUpdate = new Set();
-
+  /**
+   * Represents the current index of the hook.
+   */
   static currentHookIndex = 0;
 
   // Dentro de tu clase ReactClone
@@ -138,8 +140,6 @@ export class ReactClone {
           }
         }
       });
-      console.log("componentMap", this.componentMap);
-
       this.componentsToUpdate.clear(); // Limpiar después de procesar las actualizaciones.
     }
   }
@@ -210,5 +210,20 @@ export class ReactClone {
    */
   static setStateUpdated(): void {
     this.isStateUpdated = false;
+  }
+
+  // private methods
+
+  /**
+   * Creates a new effect.
+   * @param effect - The effect function to run.
+   * @param deps - The dependencies of the effect.
+   */
+  public static createEffect(effect: Function, deps: any[]) {
+    const hasDepsChanged = this.depsChanged(deps, this.currentHookIndex);
+    if (hasDepsChanged) {
+      this.effects[this.currentHookIndex] = { effect, deps };
+    }
+    this.currentHookIndex++;
   }
 }
