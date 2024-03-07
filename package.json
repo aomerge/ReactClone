@@ -3,9 +3,9 @@
   "version": "1.1",
   "description": "JavaScript and TypeScript example starter project",
   "scripts": {
-    "build": "babel src --out-dir dist --extensions \".tsx\" && tsc --emitDeclarationOnly",
     "cleanCache": "cd example && parcel cache clean",
     "dev": "cd example && parcel index.html",
+    "build": "cd example && parcel build index.html --dist-dir dist",
     "test": "jest ./src/test"
   },
   "dependencies": {
