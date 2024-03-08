@@ -37,10 +37,10 @@ jobs:
           node-version: "20"
 
       - name: Install dependencies
-        run: pnpm install
+        run: npm install
 
       - name: build
-        run: pnpm build
+        run: npm build
 
       - name: create artifact
         uses: actions/upload-artifact@v4
