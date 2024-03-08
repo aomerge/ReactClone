@@ -33,6 +33,13 @@ jobs:
 
     runs-on: ubuntu-latest    
     steps:
+      - name: List artifacts
+        run: |
+          curl \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/actions/artifacts
+            
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
