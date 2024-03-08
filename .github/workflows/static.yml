@@ -37,16 +37,16 @@ jobs:
           node-version: "20"
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
 
       - name: build
-        run: npm run build
+        run: pnpm build
 
       - name: create artifact
         uses: actions/upload-artifact@v4
         with:
           name: build-artifact-${{ github.run_id }}
-          path: ./
+          path: ./dist
   deploy:
     needs: build
     environment:
@@ -75,15 +75,11 @@ jobs:
         with:
           name: Upload artifact
           # Upload entire repository
-          path: "./example/dist"
+          path: "./"
 
       - name: Deploy to GitHub Pages
         id: deployment
-        
         uses: actions/deploy-pages@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          artifact_name: build-artifact-${{ github.run_id }}
-
-      - name: ls
-        run: cd example && cd dist && ls -l
+          artifact_name: Upload artifact
