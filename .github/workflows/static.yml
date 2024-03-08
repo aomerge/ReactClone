@@ -27,7 +27,28 @@ concurrency:
 
 jobs:
   # Single deploy job since we're just deploying
+  build:
+    runs-on: ubuntu-latest
+    steps:
+        - uses: actions/checkout@v4            
+        - name: Use Node.js
+          uses: actions/setup-node@v4
+          with:
+            node-version: '20'
+
+        - name: Install dependencies
+          run: npm install
+
+        - name: build
+          run: npm run build
+        
+        - name: create artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: build-artifact-${{ github.run_id }}
+            path: ./example/dist
   deploy:
+    needs: build
     environment:
       name: deploy-pages
       url: ${{ steps.deployment.outputs.page_url }}
