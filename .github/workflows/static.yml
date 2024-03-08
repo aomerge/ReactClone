@@ -30,30 +30,30 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-        - uses: actions/checkout@v4            
-        - name: Use Node.js
-          uses: actions/setup-node@v4
-          with:
-            node-version: '20'
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
 
-        - name: Install dependencies
-          run: npm install
+      - name: Install dependencies
+        run: npm install
 
-        - name: build
-          run: npm run build
-        
-        - name: create artifact
-          uses: actions/upload-artifact@v4
-          with:
-            name: build-artifact-${{ github.run_id }}
-            path: ./example/dist
+      - name: build
+        run: npm run build
+
+      - name: create artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact-${{ github.run_id }}
+          path: ./
   deploy:
     needs: build
     environment:
       name: deploy-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
-    runs-on: ubuntu-latest    
+    runs-on: ubuntu-latest
     steps:
       - name: List artifacts
         run: |
@@ -75,14 +75,14 @@ jobs:
         with:
           name: Upload artifact
           # Upload entire repository
-          path: './'
+          path: "./example/dist"
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        with:          
+        with:
           token: ${{ secrets.GITHUB_TOKEN }}
           artifact_name: Upload artifact
-        
+
       - name: ls
         run: ls -l
