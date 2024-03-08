@@ -79,10 +79,11 @@ jobs:
 
       - name: Deploy to GitHub Pages
         id: deployment
+        
         uses: actions/deploy-pages@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          artifact_name: Upload artifact
+          artifact_name: build-artifact-${{ github.run_id }}
 
       - name: ls
         run: cd example && cd dist && ls -l
