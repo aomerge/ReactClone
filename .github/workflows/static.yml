@@ -1,6 +1,6 @@
 # Simple workflow for deploying static content to GitHub Pages
 name: Deploy static content to Pages
-
+run-name: Deploy to GitHub Pages
 on:
   # Runs on pushes targeting the default branch
   push:
@@ -17,6 +17,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  actions: read
 
 # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 # However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
@@ -39,11 +40,11 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             https://api.github.com/repos/${{ github.repository }}/actions/artifacts
-            
+
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: build-artifact
+          name: build-artifact-${{ github.run_id }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
