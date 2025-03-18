@@ -1,49 +1,112 @@
+import { ReactClone } from '../reactClone/reactClone';
 /**
- * Represents a utility class for managing effects in React components.
+ * A utility class that provides an implementation similar to React's useEffect hook.
+ * 
+ * This class manages side effects in a component-like structure by tracking effects,
+ * their dependencies, and cleanup functions. Effects are only re-run when their
+ * dependencies change, mimicking React's useEffect behavior.
+ * 
+ * @example
+ * ```tsx
+ * // Inside a component rendering function
+ * UseEffect.createEffect(() => {
+ *   console.log('Effect ran');
+ *   return () => console.log('Cleanup ran');
+ * }, [someDependency]);
+ * 
+ * // After all components have rendered
+ * UseEffect.runEffects();
+ * ```
+ * 
+ * @remarks
+ * This is part of a custom React-like implementation and is not meant to be used
+ * with the official React library.
  */
-export default class UseEffect {
-  private static effects: Array<{ effect: Function; deps: any[]; cleanup?: Function }> = [];
-  private static currentEffectIndex: number = 0;
+export default class UseEffect extends ReactClone  {  
+  public static effects: any[] = [];
+  public static cleanupFunctions: any[] = [];
+  public static dependencies: any[] = [];
+  public static currentEffectIndex: number = 0;
+  public static currentEffectDependencies: any[] = [];
 
-  //public methods
+
   /**
-   * Runs all the effects.
+   * Reinicia el índice de efecto y sus dependencias asociadas.
+   * Debe invocarse al inicio de cada render para resolver el orden correcto de los efectos.
    */
-  public static runEffects() {
-    this.effects.forEach((effectObj) => {
-      if (effectObj) {
-        const { effect } = effectObj;
-        const cleanup = effect();
-        if (typeof cleanup === 'function') {
-          effectObj.cleanup = cleanup;
+  public static resetCurrentEffectIndex(): void {
+    this.currentEffectIndex = 0;    
+  }
+  /**
+   * Crea y/o actualiza un efecto similar a useEffect.
+   * Se guarda el callback y las dependencias y se ejecuta el callback si es la primera vez
+   * o si las dependencias han cambiado.
+   * 
+   * @param callback - La función a ejecutar como efecto.
+   * @param dependencies - Array de dependencias para determinar si se debe re-ejecutar el efecto.
+   */
+  public static createEffect(callback: Function, dependencies: any[]): void {
+    const index = this.currentEffectIndex;
+    // Si es la primera vez que se registra el efecto.
+    if (!this.currentEffectDependencies[index]) {
+      this.effects.push(callback);
+      this.dependencies.push(dependencies);
+      // Guarda las dependencias de la primera ejecución.
+      this.currentEffectDependencies[index] = dependencies;
+      console.log(`Ejecutando efecto inicial ${index}`);
+      const result = callback();
+      console.log("Resultado del callback:", result);
+      if (result && typeof result === "object" && result.id) {
+        const tree = ReactClone.buildComponentTree(result);
+        console.log("Árbol de componente construido desde el efecto:", tree);
+      }
+      if (typeof result === "function") {
+        this.cleanupFunctions[index] = result;
+      }
+    } else {
+      // Si ya se registró anteriormente, se verifica si las dependencias cambiaron.
+      const oldDeps = this.currentEffectDependencies[index];
+      const changed = dependencies.some((dep, i) => !Object.is(dep, oldDeps[i]));
+      if (changed) {
+        // Ejecuta la función de limpieza si existe.
+        if (this.cleanupFunctions[index]) {
+          this.cleanupFunctions[index]();
         }
+        // Actualiza las dependencias y re-ejecuta el callback.
+        console.log(`Ejecutando efecto actualizado ${index}`);
+        this.currentEffectDependencies[index] = dependencies;
+        const result = callback();
+        console.log("Resultado del callback:", result);
+        if (result && typeof result === "object" && result.id) {
+          const tree = ReactClone.buildComponentTree(result);
+          console.log("Árbol de componente construido desde el efecto:", tree);
+        }
+        if (typeof result === "function") {
+          this.cleanupFunctions[index] = result;
+        }
+      }
+    }    
+    this.currentEffectIndex++;
+  }
+
+   /**
+   * Realiza el procesamiento de cada efecto.
+   * Ejecuta el callback, pasa lo retornado a través de ReactClone.buildComponentTree
+   * y, en caso de que retorne una función de limpieza, la almacena.
+   */
+   public static runEffects(): void {
+    this.effects.forEach((callback, index) => {
+      console.log(`Ejecutando efecto (runEffects) ${index}`);
+      const result = callback();
+      console.log("Resultado del callback:", result);
+      if (result && typeof result === "object" && result.id) {
+        const tree = ReactClone.buildComponentTree(result);
+        console.log("Árbol de componente construido desde runEffects:", tree);
+      }
+      if (typeof result === "function") {
+        this.cleanupFunctions[index] = result;
       }
     });
   }
 
-  // private methods
-  /**
-   * Creates a new effect.
-   * @param effect - The effect function to run.
-   * @param deps - The dependencies of the effect.
-   */
-  public static createEffect(effect: Function, deps: any[]) {
-    const hasDepsChanged = this.depsChanged(deps, this.currentEffectIndex);
-    if (hasDepsChanged) {
-      this.effects[this.currentEffectIndex] = { effect, deps };
-    }
-    this.currentEffectIndex++;
-  }
-
-  /**
-   * Checks if the dependencies have changed.
-   * @param newDeps - The new dependencies to compare.
-   * @param index - The index of the effect.
-   * @returns True if the dependencies have changed, false otherwise.
-   */
-  private static depsChanged(newDeps: any[], index: number): boolean {
-    if (!this.effects[index]) return true;
-    const { deps: oldDeps } = this.effects[index];
-    return newDeps.some((dep, i) => dep !== oldDeps[i]);
-  }
 }

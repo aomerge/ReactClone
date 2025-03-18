@@ -1,10 +1,13 @@
 /**@jsx ReactClon */
 import ReactClone, {  
   globalState,  
-  abs,
+  useState,
+  useEffect
 
 } from "../src/setup";
+
 import "./styles.css";
+
 function ReactClon(type: any, props: any, ...args: any[]) {
   const children = [].concat(...args);
   return {
@@ -16,11 +19,13 @@ function ReactClon(type: any, props: any, ...args: any[]) {
 }
 
 function Test() {
+  const [stat, setState] = useState("valor");
+  const [stat2, setState2] = useState("valor2");
 
-  const [stat, setState] = abs("valor");
-  const [stat2, setState2] = abs("valor2");
-
-
+  useEffect(() => {
+    setState("goku2");    
+  }, [stat]); 
+  console.log("stat", stat);
   // JSX que se renderiza en el DOM
   return (
     <div>      
@@ -38,6 +43,7 @@ function Test() {
     </div>
   );
 }
+
 const Subtitle = ({ text }: { text: string | null }) => {
   return (
     <div>

@@ -6,7 +6,25 @@ import {
 } from "../types&Interface/TIndex";
 
 /**
- * Represents the ReactClone class.
+ * A simplified implementation of React's core functionality.
+ * 
+ * ReactClone provides mechanisms for creating, rendering, and updating UI components
+ * in a virtual DOM-like manner. It supports functional components, props, children,
+ * and state management through a useState hook implementation.
+ * 
+ * Features:
+ * - Virtual DOM representation with element creation and rendering
+ * - Component state management
+ * - Efficient DOM updates with selective re-rendering
+ * - Support for component props and event handling
+ * - Functional component support
+ * 
+ * @example
+ * const App = () => ReactClone.createElement('div', {className: 'app'}, 
+ *   ReactClone.createElement('h1', {}, 'Hello ReactClone')
+ * );
+ * 
+ * ReactClone.render(App(), document.getElementById('root'));
  */
 export class ReactClone {
   /**
@@ -20,7 +38,7 @@ export class ReactClone {
    */
   private static component: ReactClonElement | null = null;
   /**
-   * The root container element for the React Clone application.
+   * The root container element for the React Clone application.j
    * @type {HTMLElement | null}
    */
   private static rootContainer: HTMLElement | null = null;
@@ -212,18 +230,5 @@ export class ReactClone {
     this.isStateUpdated = false;
   }
 
-  // private methods
-
-  /**
-   * Creates a new effect.
-   * @param effect - The effect function to run.
-   * @param deps - The dependencies of the effect.
-   */
-  public static createEffect(effect: Function, deps: any[]) {
-    const hasDepsChanged = this.depsChanged(deps, this.currentHookIndex);
-    if (hasDepsChanged) {
-      this.effects[this.currentHookIndex] = { effect, deps };
-    }
-    this.currentHookIndex++;
-  }
+  
 }

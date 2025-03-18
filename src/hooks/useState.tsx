@@ -2,6 +2,21 @@ import { ReactClone } from "../reactClone/reactClone";
 
 type StateTuple = [any, (newValue: any) => any];
 
+/**
+ * A class that manages state in a React-like manner by implementing a custom useState hook.
+ * Extends the ReactClone base class to provide state management functionality.
+ * 
+ * This class maintains a global state store and handles state updates, component re-rendering,
+ * and hook indices to ensure proper state management across component lifecycles.
+ * 
+ * The state management system includes:
+ * - A global state store that maps unique IDs to state values
+ * - Hook indexing to track multiple state hooks within a single component
+ * - Component update scheduling when state changes
+ * - A subscription system for state change notifications
+ * 
+ * @extends ReactClone
+ */
 export class StateManager extends ReactClone {
   /**
    * An array of listeners for the useState hook.
@@ -52,6 +67,7 @@ export class StateManager extends ReactClone {
 
     return [this.globalState.get(uniqueId), setState];
   }
+  
   // Asegúrate de resetear 'currentHookIndex' al inicio del renderizado de cada componente.
   static resetCurrentHookIndex() {
     this.currentHookIndex = 0;
